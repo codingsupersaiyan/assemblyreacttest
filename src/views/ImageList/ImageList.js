@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import "./ImageList.css";
 import axios from "axios";
 import { render } from "@testing-library/react";
+import errorImage from '../../assets/images/image-not-found.png';
 
 export default function ImageList() {
   const [redditImages, setRedditImages] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://www.reddit.com/r/pics/.json?jsonp=")
+      .get("http://www.reddit.com/r/pics/.json?limit=28")
       .then((res) => {
         let images = res.data.data.children;
         console.log("Reddit images: ", images);
@@ -19,6 +20,11 @@ export default function ImageList() {
       });
   }, []);
 
+  //function to replace image if no image is found
+  function imageNotFound(e){
+    e.target.src = errorImage;
+  }
+
   return (
     <div class="image-list-container">
       <h3>Image Listing</h3>
@@ -27,7 +33,8 @@ export default function ImageList() {
           {redditImages.map((image) => {
             return (
               <div key={image.data.id} class="image-card">
-                <img class="image" src={image.data.url}></img>
+                <img class="image" src={image.data.url} onError={imageNotFound}></img>
+                <div class="image-title">{image.data.title}</div>
               </div>
             )
           })}
