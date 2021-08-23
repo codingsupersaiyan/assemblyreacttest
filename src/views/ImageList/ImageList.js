@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./ImageList.css";
 import axios from "axios";
 import { render } from "@testing-library/react";
-import errorImage from '../../assets/images/image-not-found.png';
+import errorImage from "../../assets/images/image-not-found.png";
+import { Tooltip } from "@material-ui/core";
 
 export default function ImageList() {
   const [redditImages, setRedditImages] = useState([]);
@@ -21,7 +22,7 @@ export default function ImageList() {
   }, []);
 
   //function to replace image if no image is found
-  function imageNotFound(e){
+  function imageNotFound(e) {
     e.target.src = errorImage;
   }
 
@@ -33,10 +34,20 @@ export default function ImageList() {
           {redditImages.map((image) => {
             return (
               <div key={image.data.id} class="image-card">
-                <img class="image" src={image.data.url} onError={imageNotFound}></img>
-                <div class="image-title">{image.data.title}</div>
+                <img
+                  class="image"
+                  src={image.data.url}
+                  onError={imageNotFound}
+                ></img>
+                {/* <Tooltip title={image.data.title}>
+                  <span> */}
+                <div class="title-bg">
+                  <div class="image-title">{image.data.title}</div>
+                </div>
+                {/* </span>
+                </Tooltip> */}
               </div>
-            )
+            );
           })}
         </div>
       )}
