@@ -8,6 +8,7 @@ import { Tooltip } from "@material-ui/core";
 export default function ImageList() {
   const [redditImages, setRedditImages] = useState([]);
   const [loadingResults, setLoadingResults] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     setLoadingResults(true);
@@ -37,12 +38,17 @@ export default function ImageList() {
     e.target.src = errorImage;
   }
 
-  function filterList() {}
+  function filterList() {
+    let filteredList = [];
+    filteredList = redditImages.filter(image => image.includes(searchText))
+    console.log('Filtered List Test: ', filteredList);
+    // setRedditImages(filteredList);
+  }
 
   return (
     <div class="image-list-container">
       <h3>Image Listing</h3>
-      <input class="search-input" placeholder="Search Results..."></input>
+      <input class="search-input" value="searchText" placeholder="Search Results..." onKeyDown={filterList}></input>
       {loadingResults == true && (
         <div class="loading-text">
           Loading Images
