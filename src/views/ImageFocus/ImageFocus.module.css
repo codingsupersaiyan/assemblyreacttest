@@ -69,3 +69,34 @@
   margin-right: 20px;
   color: #fff;
 }
+
+.imageCategories {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.votesContainer {
+  margin-top: 50px;
+}
+.votes {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 600;
+  position: relative;
+  top: -10px;
+  left: 15px;
+}
+.thumbs {
+  width: 25px;
+  height: 25px;
+  background: #fff;
+  border-radius: 50px;
+  padding: 10px;
+}
+.thumbsDown {
+  margin-top: 15px;
+  transform: rotate(180deg);
+}
+
