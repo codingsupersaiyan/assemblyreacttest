@@ -1,0 +1,49 @@
+.loadCircle {
+  position: absolute;
+  animation: pulse 1s ease infinite;
+  margin-top: -8px;
+}
+.delay1 {
+  margin-left: 6px;
+  animation-delay: 0s;
+}
+.delay2 {
+  animation-delay: 0.2s;
+  margin-left: 18px;
+}
+.delay3 {
+  animation-delay: 0.4s;
+  margin-left: 30px;
+}
+.loadingText {
+  position: absolute;
+  font-size: 50px;
+  color: #9B9B9B;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  margin: auto;
+  text-align: center;
+  top: 40%;
+}
+@keyframes pulse {
+  0% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media screen and (max-width: 762px) {
+  .loadingText {
+    font-size: 30px;
+  }
+}

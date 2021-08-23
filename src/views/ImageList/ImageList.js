@@ -1,25 +1,35 @@
-import React, { useState, useEffect } from "react";
-import "./ImageList.css";
+import React, { useState, useEffect, useRef } from "react";
+import classes from "./ImageList.module.css";
+import globalClasses from "../../App.module.css";
 import axios from "axios";
-import { render } from "@testing-library/react";
 import errorImage from "../../assets/images/image-not-found.png";
-import { Tooltip } from "@material-ui/core";
+import ImageFocus from "../ImageFocus/ImageFocus";
 
 export default function ImageList() {
   const [redditImages, setRedditImages] = useState([]);
   const [loadingResults, setLoadingResults] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [nextPageCode, setNextPageCode] = useState("");
+  const [selectedImage, setSelectedImage] = useState();
+  const list = useRef();
 
   useEffect(() => {
+    //get initial batch of images on render
+    getRedditImages(25, '');
+  }, []);
+
+  //limit = number of images on page, after = code to get next page of images
+  function getRedditImages(limit, after) {
     setLoadingResults(true);
     axios
-      .get("http://www.reddit.com/r/pics/.json?limit=28")
+      .get("http://www.reddit.com/r/pics/.json?limit=" + limit + '&after=' + after)
       .then((res) => {
         if (res["status"] == 200) {
           console.log("Reddit results: ", res);
+          setNextPageCode(res.data.data.after);
           let images = res.data.data.children;
-          // console.log("Reddit images: ", images);
-          setRedditImages(images);
+          console.log("Reddit images: ", images);
+          setRedditImages([...images]);
           setLoadingResults(false);
         } else {
           console.log("Error status: ", res["status"]);
@@ -31,49 +41,83 @@ export default function ImageList() {
         console.log("Error getting reddit images: ", err);
         setLoadingResults(false);
       });
-  }, []);
+  }
 
   //function to replace image if no image is found
   function imageNotFound(e) {
     e.target.src = errorImage;
   }
 
+  //handle 'Enter' key on search input
+  function handleKeyDown(e) {
+    if (e.key === "Enter") {
+      filterList();
+    }
+  }
+  //handle search input binding with search text
+  function handleChange(e) {
+    const value = e.target.value.toLowerCase();
+    setSearchText(value);
+  }
+
+  //handle user scrolling to bottom then grabbing next batch of images
+  function handleScroll(e) {
+    console.log('scrolling');
+  }
+
+  //filter list by search text
   function filterList() {
     let filteredList = [];
-    filteredList = redditImages.filter(image => image.includes(searchText))
-    console.log('Filtered List Test: ', filteredList);
-    // setRedditImages(filteredList);
+    filteredList = redditImages.filter((image) =>
+      image.data.title.toLowerCase().includes(searchText)
+    );
+    console.log("Filtered List Test: ", filteredList);
+    setRedditImages(filteredList);
+  }
+
+  //select image to open in seperate view
+  function selectImage(data) {
+    setSelectedImage(data)
   }
 
   return (
-    <div class="image-list-container">
+    <div className={classes.imageListContainer} onScroll={handleScroll}>
       <h3>Image Listing</h3>
-      <input class="search-input" value="searchText" placeholder="Search Results..." onKeyDown={filterList}></input>
+      <input
+        className={classes.searchInput}
+        value={searchText}
+        placeholder="Search Results..."
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+      ></input>
       {loadingResults == true && (
-        <div class="loading-text">
+        <div className={globalClasses.loadingText}>
           Loading Images
-          <span class="load-circle delay-1">.</span>
-          <span class="load-circle delay-2">.</span>
-          <span class="load-circle delay-3">.</span>
+          <span className={`${globalClasses.loadCircle} ${globalClasses.delay1}`}>.</span>
+          <span className={`${globalClasses.loadCircle} ${globalClasses.delay2}`}>.</span>
+          <span className={`${globalClasses.loadCircle} ${globalClasses.delay3}`}>.</span>
         </div>
       )}
       {loadingResults == false && redditImages.length > 0 && (
-        <div class="image-list">
+        <div className={classes.imageList}>
           {redditImages.map((image) => {
             return (
-              <div key={image.data.id} class="image-card">
+              <div onClick={() => {selectImage(image)}} key={image.data.id} className={classes.imageCard}>
                 <img
-                  class="image"
-                  src={image.data.url}
+                  className={classes.image}
+                  src={image.data.thumbnail}
                   onError={imageNotFound}
                 ></img>
-                <div class="title-bg">
-                  <div class="image-title">{image.data.title}</div>
+                <div className={classes.titleBg}>
+                  <div className={classes.imageTitle}>{image.data.title}</div>
                 </div>
               </div>
             );
           })}
         </div>
+      )}
+      {selectedImage && (
+        <ImageFocus data={selectedImage}/>
       )}
     </div>
   );
