@@ -7,17 +7,28 @@ import { Tooltip } from "@material-ui/core";
 
 export default function ImageList() {
   const [redditImages, setRedditImages] = useState([]);
+  const [loadingResults, setLoadingResults] = useState(false);
 
   useEffect(() => {
+    setLoadingResults(true);
     axios
       .get("http://www.reddit.com/r/pics/.json?limit=28")
       .then((res) => {
-        let images = res.data.data.children;
-        console.log("Reddit images: ", images);
-        setRedditImages(images);
+        if (res["status"] == 200) {
+          console.log("Reddit results: ", res);
+          let images = res.data.data.children;
+          // console.log("Reddit images: ", images);
+          setRedditImages(images);
+          setLoadingResults(false);
+        } else {
+          console.log("Error status: ", res["status"]);
+          console.log("Error happened while getting reddit images: ", res);
+          setLoadingResults(false);
+        }
       })
       .catch((err) => {
         console.log("Error getting reddit images: ", err);
+        setLoadingResults(false);
       });
   }, []);
 
@@ -26,10 +37,21 @@ export default function ImageList() {
     e.target.src = errorImage;
   }
 
+  function filterList() {}
+
   return (
     <div class="image-list-container">
       <h3>Image Listing</h3>
-      {redditImages.length > 0 && (
+      <input class="search-input" placeholder="Search Results..."></input>
+      {loadingResults == true && (
+        <div class="loading-text">
+          Loading Images
+          <span class="load-circle delay-1">.</span>
+          <span class="load-circle delay-2">.</span>
+          <span class="load-circle delay-3">.</span>
+        </div>
+      )}
+      {loadingResults == false && redditImages.length > 0 && (
         <div class="image-list">
           {redditImages.map((image) => {
             return (
@@ -39,13 +61,9 @@ export default function ImageList() {
                   src={image.data.url}
                   onError={imageNotFound}
                 ></img>
-                {/* <Tooltip title={image.data.title}>
-                  <span> */}
                 <div class="title-bg">
                   <div class="image-title">{image.data.title}</div>
                 </div>
-                {/* </span>
-                </Tooltip> */}
               </div>
             );
           })}
