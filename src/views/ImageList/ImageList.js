@@ -13,22 +13,32 @@ export default function ImageList() {
   const [nextPageCode, setNextPageCode] = useState("");
   const [showMore, setShowMore] = useState(true);
   const [selectedImage, setSelectedImage] = useState();
+  const [hitBottom, setHitBottom] = useState(false);
 
   useEffect(() => {
     //get initial batch of images on render
-    window.addEventListener("scroll", handleScroll);
     getRedditImages();
   }, []);
 
-  //limit = number of images on page, after = code to get next page of images
+  useEffect(() => {
+    //infinite scroll update images logic
+    if (hitBottom === true) {
+      setHitBottom(false);
+      getRedditImages(nextPageCode);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hitBottom]);
+
+  //para,s {limit: number of items to grab, after: code to get next 'page' of images (acts as next button)}
   const getRedditImages = (code) => {
     setLoadingResults(true);
-    setSearchText('');
+    setSearchText("");
 
     axios({
       method: "GET",
       url: "https://www.reddit.com/r/pics/.json",
-      params: { limit: 25, after: code },
+      params: { limit: 24, after: code },
     })
       .then((res) => {
         if (res["status"] == 200) {
@@ -50,35 +60,34 @@ export default function ImageList() {
   };
 
   //function to replace image if no image is found
-  function imageNotFound(e) {
+  const imageNotFound = (e) => {
     e.target.src = errorImage;
-  }
+  };
 
   //handle 'Enter' key on search input
-  function handleKeyDown(e) {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       filterList();
     }
-  }
+  };
   //handle search input binding with search text
-  function handleChange(e) {
+  const handleChange = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchText(value);
-  }
+  };
 
-  //tried to include infinite scroll but ran into errors
+  //infinite scrolling handler
   const handleScroll = () => {
     const bottom =
       Math.ceil(window.innerHeight + window.scrollY) >=
       document.documentElement.scrollHeight;
     if (bottom) {
-      // console.log("at the bottom");
-      // getRedditImages();
+      setHitBottom(true);
     }
   };
 
   //filter list by search text
-  function filterList() {
+  const filterList = () => {
     if (searchText.trim().length < 1) {
       setShowMore(true);
     } else {
@@ -89,30 +98,36 @@ export default function ImageList() {
       image.data.title.toLowerCase().includes(searchText.trim())
     );
     setFilteredRedditImages(filteredList);
-  }
+  };
 
-  function refreshList() {
-    setSearchText('');
+  //refresh button if no images are found
+  const refreshList = () => {
+    setSearchText("");
     setFilteredRedditImages(redditImages);
-  }
+  };
 
-  //select image to open in seperate view and prevent scrolling
-  function selectImage(data) {
+  //select image to open in seperate view and prevent body scrolling
+  const selectImage = (data) => {
     document.body.style.overflow = "hidden";
     setSelectedImage(data);
-  }
-
+  };
   return (
     <div className={classes.imageListContainer}>
-      <h3 className={classes.imageListHeader}>Reddit - r/pics</h3>
-      <input
-        className={classes.searchInput}
-        value={searchText}
-        placeholder="Search Results..."
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-      ></input>
-      <button onClick={()=> filterList()} className={classes.searchButton}>Search</button>
+      <div className={classes.header}>
+        <h3 className={classes.imageListHeader}>Reddit - r/pics</h3>
+        <div className={classes.searchContainer}>
+          <input
+            className={classes.searchInput}
+            value={searchText}
+            placeholder="Search By Title..."
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+          ></input>
+          <button onClick={() => filterList()} className={classes.searchButton}>
+            Search
+          </button>
+        </div>
+      </div>
       {loadingResults == true && (
         <div className={globalClasses.loadingText}>
           Loading Images
@@ -141,6 +156,7 @@ export default function ImageList() {
                 onClick={() => {
                   selectImage(image);
                 }}
+                id={index}
                 key={image.data.id}
                 className={classes.imageCard}
               >
@@ -161,7 +177,12 @@ export default function ImageList() {
       {filteredRedditImages.length < 1 && !loadingResults && (
         <div>
           <p className={globalClasses.loadingText}>No Images Found</p>
-          <button className={classes.refreshButton} onClick={() => refreshList('')}>Refresh</button>
+          <button
+            className={classes.refreshButton}
+            onClick={() => refreshList("")}
+          >
+            Refresh
+          </button>
         </div>
       )}
 
@@ -171,10 +192,31 @@ export default function ImageList() {
 
       {filteredRedditImages.length > 0 && showMore && (
         <button
-          className={classes.loadMoreButton}
+          className={classes.loadMore}
           onClick={() => getRedditImages(nextPageCode)}
         >
-          {loadingResults ? <span>LOADING...</span> : <span>LOAD MORE</span>}
+          {loadingResults ? (
+            <div>
+              LOADING IMAGES{" "}
+              <span
+                className={`${globalClasses.loadCircle} ${globalClasses.delay1}`}
+              >
+                .
+              </span>
+              <span
+                className={`${globalClasses.loadCircle} ${globalClasses.delay2}`}
+              >
+                .
+              </span>
+              <span
+                className={`${globalClasses.loadCircle} ${globalClasses.delay3}`}
+              >
+                .
+              </span>
+            </div>
+          ) : (
+            <span>LOAD MORE</span>
+          )}
         </button>
       )}
     </div>

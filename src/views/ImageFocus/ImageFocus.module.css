@@ -121,7 +121,7 @@
   background: rgba(92, 143, 252, 0.9);
 }
 
-@media screen and (max-width: 762px) {
+@media screen and (max-width: 768px) {
   .infoContainer {
     flex-direction: column-reverse;
     justify-content: flex-end;

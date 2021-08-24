@@ -3,11 +3,8 @@ import classes from "./ImageFocus.module.css";
 import thumbsUp from "../../assets/images/thumb-up.png";
 
 export default function ImageFocus(props) {
-  useEffect(() => {
-    console.log("Props passed down: ", props);
-  }, []);
 
-  function closeWindow() {
+  const closeWindow = () => {
     document.body.style.overflow = 'visible';
     props.setSelectedImage(null);
   }

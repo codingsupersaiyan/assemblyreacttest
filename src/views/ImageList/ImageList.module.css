@@ -2,33 +2,63 @@
   font-size: 35px;
   text-align: left;
   margin: 30px 0px;
+  width: 40%
 }
+.header {
+  display: flex;
+  margin-right: -5px;
+}
+.searchContainer {
+  margin: auto 20px;
+  width: 100%;
+  display: flex;
+}
+.searchInput {
+  height: 30px;
+  width: 80%;
+  font-size: 15px;
+  padding: 2px 8px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border: 1px solid #4A4A4A;
+}
+.searchButton {
+  height: 36px;
+  padding: 2px 20px;
+  background: rgb(58, 97, 202);
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  width: 20%;
+}
+
 .imageListContainer {
   padding: 10px;
 }
 .imageList {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 5px;
+  justify-content: space-evenly;
 }
 .imageCard {
   margin: 0px;
   position: relative;
-  width: 19%;
-  gap: 10px;
+  flex-grow: 4;
   display: inline-block;
   height: 280px;
   overflow: hidden;
   cursor: pointer;
   border-radius: 10px;
-  /* border: 1px solid #4A4A4A; */
   transition: 0.25s ease;
 }
 .imageCard:hover {
   transform: scale(1.15);
   transition: 0.25s ease;
   z-index: 3;
-  /* box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.2); */
 }
 
 .image {
@@ -57,34 +87,10 @@
   color: #fff;
   padding: 5px;
 }
-
-.searchInput {
-  height: 30px;
-  width: 50%;
-  font-size: 15px;
-  padding: 2px 8px;
-  margin-bottom: 20px;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-  border: 1px solid #4A4A4A;
-}
-.searchButton {
-  height: 36px;
-  padding: 2px 20px;
-  background: rgb(58, 97, 202);
-  color: #fff;
-  border: none;
-  font-size: 15px;
-  cursor: pointer;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-
-.loadMoreButton {
+.loadMore {
   color: rgb(71, 123, 236);
   width: 100%;
-  border: 2px solid rgb(71, 123, 236);
-  border-radius: 10px;
+  border: none;
   padding: 20px 5px;
   font-size: 20px;
   text-align: center;
@@ -93,11 +99,11 @@
   margin: 30px 0px 50px 0px;
   cursor: pointer;
 }
-.loadMoreButton:hover {
+.loadMore:hover {
   background: rgb(71, 123, 236);
   color: #fff;
 }
-.loadMoreButton:active {
+.loadMore:active {
   background: rgb(86, 138, 250);
 }
 
@@ -136,11 +142,23 @@
 }
 
 /* mobile screens */
-@media screen and (max-width: 762px) {
+@media screen and (max-width: 768px) {
   .imageCard {
     width: 100%;
   }
   .searchInput {
     width: 60%;
+  }
+  .header {
+    flex-direction: column;
+  }
+  .imageListHeader {
+    width: 100%;
+  }
+  .searchContainer {
+    margin: 0px 0px 10px 0px;
+  }
+  .searchButton {
+    width: 40%;
   }
 }
