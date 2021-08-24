@@ -92,6 +92,7 @@ export default function ImageList() {
   }
 
   function refreshList() {
+    setSearchText('');
     setFilteredRedditImages(redditImages);
   }
 
