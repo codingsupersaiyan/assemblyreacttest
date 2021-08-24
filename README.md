@@ -7,7 +7,6 @@
 - Heroku server is using CD/CI pipeline.
 - Not using any tree-shaking techniques for production. Not sure if React has these compiling techniques.
 - Github repository can be found at [https://github.com/codingsupersaiyan/assemblyreacttest]
-- Time alloted: around 8 hours. I am fairly new to react, so I spent a lot of time with researching various techniques. I got stuck while trying to implement a scroll to load / infinite load technique and spent a lot of time trying to get it to work. Unfortunately I was not able to make this work and decided to include a "Load More" button at the bottom.
+- Time alloted: around 9 hours. I am fairly new to react, so I spent a lot of time with researching various techniques. I got stuck while trying to implement a scroll to load / infinite load technique and spent a lot of time trying to get it to work.
 - This project is mobile responsiveness.
-- Thanks for the opportunity. I had a lot of fun learning React and doing this project. 
-
+- Thanks for the opportunity. I had a lot of fun learning React and doing this project.
