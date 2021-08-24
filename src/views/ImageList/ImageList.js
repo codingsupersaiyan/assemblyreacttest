@@ -91,6 +91,10 @@ export default function ImageList() {
     setFilteredRedditImages(filteredList);
   }
 
+  function refreshList() {
+    setFilteredRedditImages(redditImages);
+  }
+
   //select image to open in seperate view and prevent scrolling
   function selectImage(data) {
     document.body.style.overflow = "hidden";
@@ -156,7 +160,7 @@ export default function ImageList() {
       {filteredRedditImages.length < 1 && !loadingResults && (
         <div>
           <p className={globalClasses.loadingText}>No Images Found</p>
-          <button className={classes.refreshButton} onClick={() => getRedditImages('')}>Refresh</button>
+          <button className={classes.refreshButton} onClick={() => refreshList('')}>Refresh</button>
         </div>
       )}
 
