@@ -27,7 +27,7 @@ export default function ImageList() {
 
     axios({
       method: "GET",
-      url: "http://www.reddit.com/r/pics/.json",
+      url: "https://www.reddit.com/r/pics/.json",
       params: { limit: 25, after: code },
     })
       .then((res) => {
