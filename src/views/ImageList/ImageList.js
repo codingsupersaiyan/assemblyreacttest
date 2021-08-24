@@ -32,11 +32,8 @@ export default function ImageList() {
     })
       .then((res) => {
         if (res["status"] == 200) {
-          console.log("res: ", res);
-          console.log("code: ", res.data.data.after);
           setNextPageCode(res.data.data.after);
           let images = res.data.data.children;
-          console.log("Images coming in: ", images);
           setRedditImages([...redditImages, ...images]);
           setFilteredRedditImages([...filteredRedditImages, ...images]);
           setLoadingResults(false);
@@ -69,12 +66,13 @@ export default function ImageList() {
     setSearchText(value);
   }
 
+  //tried to include infinite scroll but ran into errors
   const handleScroll = () => {
     const bottom =
       Math.ceil(window.innerHeight + window.scrollY) >=
       document.documentElement.scrollHeight;
     if (bottom) {
-      console.log("at the bottom");
+      // console.log("at the bottom");
       // getRedditImages();
     }
   };
@@ -90,7 +88,6 @@ export default function ImageList() {
     filteredList = redditImages.filter((image) =>
       image.data.title.toLowerCase().includes(searchText.trim())
     );
-    console.log("Filtered List Test: ", filteredList);
     setFilteredRedditImages(filteredList);
   }
 
@@ -102,7 +99,7 @@ export default function ImageList() {
 
   return (
     <div className={classes.imageListContainer}>
-      <h3>Image Listing</h3>
+      <h3 className={classes.imageListHeader}>Reddit - r/pics</h3>
       <input
         className={classes.searchInput}
         value={searchText}
@@ -110,7 +107,7 @@ export default function ImageList() {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       ></input>
-      <button className={classes.searchButton}>Search</button>
+      <button onClick={()=> filterList()} className={classes.searchButton}>Search</button>
       {loadingResults == true && (
         <div className={globalClasses.loadingText}>
           Loading Images
