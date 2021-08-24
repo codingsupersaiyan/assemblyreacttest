@@ -4,7 +4,6 @@
 .imageList {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 10px;
 }
 .imageCard {
@@ -13,7 +12,7 @@
   width: 19%;
   gap: 10px;
   display: inline-block;
-  height: 250px;
+  height: 280px;
   overflow: hidden;
   cursor: pointer;
   border-radius: 10px;
@@ -37,9 +36,9 @@
 .titleBg {
   position: absolute;
   z-index: 2;
-  height: 30%;
+  height: 20%;
   width: 100%;
-  top: 70%;
+  top: 80%;
   background: rgba(0, 0, 0, 0.7);
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -48,14 +47,95 @@
   font-size: 15px;
   font-weight: 500;
   text-overflow: ellipsis;
+  white-space: nowrap;
   overflow: hidden;
   color: #fff;
   padding: 5px;
+}
+
+.searchInput {
+  height: 30px;
+  width: 50%;
+  font-size: 15px;
+  padding: 2px 8px;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border: 1px solid #4A4A4A;
+}
+.searchButton {
+  height: 36px;
+  padding: 2px 20px;
+  background: rgb(58, 97, 202);
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.loadMoreButton {
+  color: rgb(71, 123, 236);
+  width: 100%;
+  border: 2px solid rgb(71, 123, 236);
+  border-radius: 10px;
+  padding: 20px 5px;
+  font-size: 20px;
+  text-align: center;
+  background: #fff;
+  font-weight: 600;
+  margin: 30px 0px 50px 0px;
+  cursor: pointer;
+}
+.loadMoreButton:hover {
+  background: rgb(71, 123, 236);
+  color: #fff;
+}
+.loadMoreButton:active {
+  background: rgb(86, 138, 250);
+}
+
+.refreshButton {
+  color: rgb(71, 123, 236);
+  width: 100%;
+  max-width: 200px;
+  border: 1px solid rgb(71, 123, 236);
+  border-radius: 10px;
+  padding: 12px 5px;
+  font-size: 18px;
+  text-align: center;
+  background: #fff;
+  font-weight: 600;
+  margin: 30px 0px 50px 0px;
+  cursor: pointer;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  top: 50%;
+}
+.refreshButton:hover {
+  background: rgb(71, 123, 236);
+  color: #fff;
+}
+.refreshButton:active {
+  background: rgb(86, 138, 250);
+}
+
+.author {
+  background: transparent;
+  color: #fff;
+  font-weight: 600;
+  padding: 5px 5px 0px 5px;
 }
 
 /* mobile screens */
 @media screen and (max-width: 762px) {
   .imageCard {
     width: 100%;
+  }
+  .searchInput {
+    width: 60%;
   }
 }

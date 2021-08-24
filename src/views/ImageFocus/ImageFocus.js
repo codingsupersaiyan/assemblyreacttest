@@ -7,8 +7,14 @@ export default function ImageFocus(props) {
     console.log("Props passed down: ", props);
   }, []);
 
+  function closeWindow() {
+    document.body.style.overflow = 'visible';
+    props.setSelectedImage(null);
+  }
+
   return (
     <div className={classes.imageFocusContainer}>
+      <button onClick={closeWindow} className={classes.closeButton}>x</button>
       <div className={classes.infoContainer}>
         <div className={classes.leftContainer}>
           <img
@@ -35,11 +41,11 @@ export default function ImageFocus(props) {
           </div>
           <div className={classes.imageTitle}>"{props.data.data.title}"</div>
           <div className={classes.votesContainer}>
-            <div>
+            <div className={classes.votesRow}>
               <img className={classes.thumbs} src={thumbsUp} />
               <span className={classes.votes}>{props.data.data.ups}</span>
             </div>
-            <div>
+            <div className={classes.votesRow}>
               <img className={`${classes.thumbs} ${classes.thumbsDown}`} src={thumbsUp} />
               <span className={classes.votes}>{props.data.data.downs}</span>
             </div>

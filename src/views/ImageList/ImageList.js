@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import classes from "./ImageList.module.css";
 import globalClasses from "../../App.module.css";
 import axios from "axios";
@@ -7,29 +7,38 @@ import ImageFocus from "../ImageFocus/ImageFocus";
 
 export default function ImageList() {
   const [redditImages, setRedditImages] = useState([]);
+  const [filteredRedditImages, setFilteredRedditImages] = useState([]);
   const [loadingResults, setLoadingResults] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [nextPageCode, setNextPageCode] = useState("");
+  const [showMore, setShowMore] = useState(true);
   const [selectedImage, setSelectedImage] = useState();
-  const list = useRef();
 
   useEffect(() => {
     //get initial batch of images on render
-    getRedditImages(25, '');
+    window.addEventListener("scroll", handleScroll);
+    getRedditImages();
   }, []);
 
   //limit = number of images on page, after = code to get next page of images
-  function getRedditImages(limit, after) {
+  const getRedditImages = (code) => {
     setLoadingResults(true);
-    axios
-      .get("http://www.reddit.com/r/pics/.json?limit=" + limit + '&after=' + after)
+    setSearchText('');
+
+    axios({
+      method: "GET",
+      url: "http://www.reddit.com/r/pics/.json",
+      params: { limit: 25, after: code },
+    })
       .then((res) => {
         if (res["status"] == 200) {
-          console.log("Reddit results: ", res);
+          console.log("res: ", res);
+          console.log("code: ", res.data.data.after);
           setNextPageCode(res.data.data.after);
           let images = res.data.data.children;
-          console.log("Reddit images: ", images);
-          setRedditImages([...images]);
+          console.log("Images coming in: ", images);
+          setRedditImages([...redditImages, ...images]);
+          setFilteredRedditImages([...filteredRedditImages, ...images]);
           setLoadingResults(false);
         } else {
           console.log("Error status: ", res["status"]);
@@ -41,7 +50,7 @@ export default function ImageList() {
         console.log("Error getting reddit images: ", err);
         setLoadingResults(false);
       });
-  }
+  };
 
   //function to replace image if no image is found
   function imageNotFound(e) {
@@ -60,28 +69,39 @@ export default function ImageList() {
     setSearchText(value);
   }
 
-  //handle user scrolling to bottom then grabbing next batch of images
-  function handleScroll(e) {
-    console.log('scrolling');
-  }
+  const handleScroll = () => {
+    const bottom =
+      Math.ceil(window.innerHeight + window.scrollY) >=
+      document.documentElement.scrollHeight;
+    if (bottom) {
+      console.log("at the bottom");
+      // getRedditImages();
+    }
+  };
 
   //filter list by search text
   function filterList() {
+    if (searchText.trim().length < 1) {
+      setShowMore(true);
+    } else {
+      setShowMore(false);
+    }
     let filteredList = [];
     filteredList = redditImages.filter((image) =>
-      image.data.title.toLowerCase().includes(searchText)
+      image.data.title.toLowerCase().includes(searchText.trim())
     );
     console.log("Filtered List Test: ", filteredList);
-    setRedditImages(filteredList);
+    setFilteredRedditImages(filteredList);
   }
 
-  //select image to open in seperate view
+  //select image to open in seperate view and prevent scrolling
   function selectImage(data) {
-    setSelectedImage(data)
+    document.body.style.overflow = "hidden";
+    setSelectedImage(data);
   }
 
   return (
-    <div className={classes.imageListContainer} onScroll={handleScroll}>
+    <div className={classes.imageListContainer}>
       <h3>Image Listing</h3>
       <input
         className={classes.searchInput}
@@ -90,25 +110,45 @@ export default function ImageList() {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       ></input>
+      <button className={classes.searchButton}>Search</button>
       {loadingResults == true && (
         <div className={globalClasses.loadingText}>
           Loading Images
-          <span className={`${globalClasses.loadCircle} ${globalClasses.delay1}`}>.</span>
-          <span className={`${globalClasses.loadCircle} ${globalClasses.delay2}`}>.</span>
-          <span className={`${globalClasses.loadCircle} ${globalClasses.delay3}`}>.</span>
+          <span
+            className={`${globalClasses.loadCircle} ${globalClasses.delay1}`}
+          >
+            .
+          </span>
+          <span
+            className={`${globalClasses.loadCircle} ${globalClasses.delay2}`}
+          >
+            .
+          </span>
+          <span
+            className={`${globalClasses.loadCircle} ${globalClasses.delay3}`}
+          >
+            .
+          </span>
         </div>
       )}
-      {loadingResults == false && redditImages.length > 0 && (
+      {filteredRedditImages.length > 0 && (
         <div className={classes.imageList}>
-          {redditImages.map((image) => {
+          {filteredRedditImages.map((image, index) => {
             return (
-              <div onClick={() => {selectImage(image)}} key={image.data.id} className={classes.imageCard}>
+              <div
+                onClick={() => {
+                  selectImage(image);
+                }}
+                key={image.data.id}
+                className={classes.imageCard}
+              >
                 <img
                   className={classes.image}
                   src={image.data.thumbnail}
                   onError={imageNotFound}
                 ></img>
                 <div className={classes.titleBg}>
+                  <div className={classes.author}>{image.data.author}</div>
                   <div className={classes.imageTitle}>{image.data.title}</div>
                 </div>
               </div>
@@ -116,8 +156,24 @@ export default function ImageList() {
           })}
         </div>
       )}
+      {filteredRedditImages.length < 1 && !loadingResults && (
+        <div>
+          <p className={globalClasses.loadingText}>No Images Found</p>
+          <button className={classes.refreshButton} onClick={() => getRedditImages('')}>Refresh</button>
+        </div>
+      )}
+
       {selectedImage && (
-        <ImageFocus data={selectedImage}/>
+        <ImageFocus data={selectedImage} setSelectedImage={setSelectedImage} />
+      )}
+
+      {filteredRedditImages.length > 0 && showMore && (
+        <button
+          className={classes.loadMoreButton}
+          onClick={() => getRedditImages(nextPageCode)}
+        >
+          {loadingResults ? <span>LOADING...</span> : <span>LOAD MORE</span>}
+        </button>
       )}
     </div>
   );
